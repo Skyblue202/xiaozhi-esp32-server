@@ -1,0 +1,68 @@
+server:
+  ip: 0.0.0.0
+  port: 8000
+  http_port: 8003
+  websocket: ws://0.0.0.0:8000/xiaozhi/v1/
+  vision_explain: http://0.0.0.0:8003/mcp/vision/explain
+
+log:
+  log_level: INFO
+  log_dir: tmp
+  log_file: "server.log"
+  data_dir: data
+
+delete_audio: true
+close_connection_no_voice_time: 120
+
+selected_module:
+  VAD: SileroVAD
+  ASR: FunASR
+  LLM: DeepSeekLLM
+  TTS: EdgeTTS
+  Memory: nomem
+  Intent: function_call
+
+Intent:
+  function_call:
+    type: function_call
+    functions:
+      - change_role
+      - web_search
+      - get_weather
+      - get_news_from_newsnow
+      - play_music
+
+Memory:
+  nomem:
+    type: nomem
+
+VAD:
+  SileroVAD:
+    type: silero
+    threshold: 0.5
+    threshold_low: 0.3
+    model_dir: models/snakers4_silero-vad
+    min_silence_duration_ms: 200
+
+ASR:
+  FunASR:
+    type: fun_local
+    model_dir: models/SenseVoiceSmall
+    output_dir: tmp/
+    language: auto
+
+LLM:
+  DeepSeekLLM:
+    type: openai
+    model_name: "deepseek-chat"
+    api_key: "sk-496f2066434144f582655f9f39f17a85"
+    url: "https://api.deepseek.com"
+
+TTS:
+  EdgeTTS:
+    type: edge
+    voice: es-ES-ElviraNeural
+    output_dir: tmp/
+
+prompt: |
+  Eres un asistente de voz inteligente y amigable. Responde siempre en español de forma natural y concisa.
