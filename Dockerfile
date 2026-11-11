@@ -8,6 +8,10 @@ RUN apt-get update && apt-get install -y \
 
 WORKDIR /app
 
+# Instalamos la versión ligera de PyTorch (solo CPU) para evitar descargar 
+# los gigas de controladores de NVIDIA y triton que no sirven aquí.
+RUN pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
+
 COPY main/xiaozhi-server/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
