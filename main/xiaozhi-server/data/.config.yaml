@@ -29,7 +29,7 @@ end_prompt:
 
 selected_module:
   VAD: SileroVAD
-  ASR: FunASR
+  ASR: GroqASR
   LLM: DeepSeekLLM
   TTS: EdgeTTS
   Memory: nomem
@@ -57,17 +57,18 @@ VAD:
     min_silence_duration_ms: 200
 
 ASR:
-  FunASR:
-    type: fun_local
-    model_dir: models/SenseVoiceSmall
+  GroqASR:
+    type: openai
+    api_key: "__GROQ_API_KEY__"
+    base_url: https://api.groq.com/openai/v1/audio/transcriptions
+    model_name: whisper-large-v3-turbo
     output_dir: tmp/
-    language: auto
 
 LLM:
   DeepSeekLLM:
     type: openai
     model_name: "deepseek-chat"
-    api_key: "sk-496f2066434144f582655f9f39f17a85"
+    api_key: "__DEEPSEEK_API_KEY__"
     url: "https://api.deepseek.com"
 
 TTS:
