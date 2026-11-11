@@ -15,7 +15,9 @@ class ASRProvider(ASRProviderBase):
         self.interface_type = InterfaceType.NON_STREAM
         self.api_key = config.get("api_key")
         self.api_url = config.get("base_url")
-        self.model = config.get("model_name")        
+        self.model = config.get("model_name")
+        self.language = config.get("language")
+        self.prompt = config.get("prompt")
         self.output_dir = config.get("output_dir")
         self.delete_audio_file = delete_audio_file
 
@@ -30,19 +32,24 @@ class ASRProvider(ASRProviderBase):
             if artifacts is None:
                 return "", None
             file_path = artifacts.file_path
-                
+
             logger.bind(tag=TAG).info(f"file path: {file_path}")
             headers = {
                 "Authorization": f"Bearer {self.api_key}",
             }
-            
-            # 使用data参数传递模型名称
+
+            # Parámetros de la transcripción
             data = {
                 "model": self.model
             }
+            # Forzar idioma (ej. "es") para que no adivine
+            if self.language:
+                data["language"] = self.language
+            # Texto de contexto opcional para mejorar la precisión
+            if self.prompt:
+                data["prompt"] = self.prompt
 
-
-            with open(file_path, "rb") as audio_file:  # 使用with语句确保文件关闭
+            with open(file_path, "rb") as audio_file:
                 files = {
                     "file": audio_file
                 }
@@ -55,16 +62,15 @@ class ASRProvider(ASRProviderBase):
                     headers=headers
                 )
                 logger.bind(tag=TAG).debug(
-                    f"语音识别耗时: {time.time() - start_time:.3f}s | 结果: {response.text}"
+                    f"Tiempo de reconocimiento: {time.time() - start_time:.3f}s | Resultado: {response.text}"
                 )
 
             if response.status_code == 200:
                 text = response.json().get("text", "")
                 return text, file_path
             else:
-                raise Exception(f"API请求失败: {response.status_code} - {response.text}")
-                
+                raise Exception(f"API request failed: {response.status_code} - {response.text}")
+
         except Exception as e:
-            logger.bind(tag=TAG).error(f"语音识别失败: {e}")
+            logger.bind(tag=TAG).error(f"Error de reconocimiento de voz: {e}")
             return "", None
-        
