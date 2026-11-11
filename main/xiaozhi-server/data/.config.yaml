@@ -2,8 +2,8 @@ server:
   ip: 0.0.0.0
   port: 8000
   http_port: 8003
-  websocket: ws://0.0.0.0:8000/xiaozhi/v1/
-  vision_explain: http://0.0.0.0:8003/mcp/vision/explain
+  websocket: wss://xiaozhi-esp32-server-production-5f78fc40.up.railway.app/xiaozhi/v1/
+  vision_explain: https://xiaozhi-esp32-server-production-5f78fc40.up.railway.app/mcp/vision/explain
 
 log:
   log_level: INFO
