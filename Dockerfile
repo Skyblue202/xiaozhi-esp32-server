@@ -1,11 +1,11 @@
 FROM python:3.10-slim
 
-# 1. Instalamos TODAS las dependencias del sistema necesarias.
-# Incluimos build-essential para compilar, y libgomp1/libgl1 para PyTorch y visión.
+# 1. Instalamos TODAS las dependencias del sistema necesarias (incluyendo wget para la descarga)
 RUN apt-get update && apt-get install -y \
     ffmpeg \
     libopus0 \
     git \
+    wget \
     build-essential \
     libgl1 \
     libglib2.0-0 \
@@ -14,18 +14,22 @@ RUN apt-get update && apt-get install -y \
 
 WORKDIR /app
 
-# 2. Instalamos la versión ligera de PyTorch (solo CPU) para evitar descargar GBs de NVIDIA.
+# 2. Descargamos el modelo de voz durante la construcción para que no falle al arrancar
+RUN mkdir -p /app/models/SenseVoiceSmall && \
+    wget -q https://huggingface.co/FunAudioLLM/SenseVoiceSmall/resolve/main/model.pt -O /app/models/SenseVoiceSmall/model.pt
+
+# 3. Instalamos la versión ligera de PyTorch (solo CPU)
 RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cpu
 
-# 3. Copiamos e instalamos los requerimientos del proyecto.
+# 4. Copiamos e instalamos los requerimientos (ya editados para saltar PyTorch)
 COPY main/xiaozhi-server/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# 4. Copiamos el resto del código del servidor.
+# 5. Copiamos el resto del código del servidor
 COPY main/xiaozhi-server/ .
 
 EXPOSE 8000
 
-# 5. Comando de inicio.
+# 6. Comando de inicio
 CMD ["python", "app.py"]
