@@ -18,23 +18,20 @@ RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cpu && \
     pip install --no-cache-dir -r requirements.txt
 
-# Configuración de Nginx optimizada
+# Configuración de Nginx mejorada
 RUN echo 'server { \
     listen 80; \
     location /xiaozhi/ota/ { \
-        proxy_pass http://127.0.0.1:8003/xiaozhi/ota/; \
-        proxy_set_header Host $host; \
-    } \
-    location /xiaozhi/ota { \
-        proxy_pass http://127.0.0.1:8003/xiaozhi/ota; \
-        proxy_set_header Host $host; \
+        proxy_pass http://127.0.0.1:8003; \
+        proxy_set_header Host $http_host; \
+        proxy_set_header X-Real-IP $remote_addr; \
     } \
     location / { \
         proxy_pass http://127.0.0.1:8000; \
         proxy_http_version 1.1; \
         proxy_set_header Upgrade $http_upgrade; \
         proxy_set_header Connection "upgrade"; \
-        proxy_set_header Host $host; \
+        proxy_set_header Host $http_host; \
     } \
 }' > /etc/nginx/conf.d/default.conf
 
