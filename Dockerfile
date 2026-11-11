@@ -1,6 +1,6 @@
 FROM python:3.10-slim
 
-# 1. Instalamos TODAS las dependencias del sistema necesarias (incluyendo wget para la descarga)
+# 1. Instalamos las dependencias del sistema (incluyendo wget)
 RUN apt-get update && apt-get install -y \
     ffmpeg \
     libopus0 \
@@ -14,15 +14,15 @@ RUN apt-get update && apt-get install -y \
 
 WORKDIR /app
 
-# 2. Descargamos el modelo de voz durante la construcción para que no falle al arrancar
+# 2. Descargamos el modelo de voz desde ModelScope (más estable)
 RUN mkdir -p /app/models/SenseVoiceSmall && \
-    wget -q https://huggingface.co/FunAudioLLM/SenseVoiceSmall/resolve/main/model.pt -O /app/models/SenseVoiceSmall/model.pt
+    wget -q https://modelscope.cn/models/iic/SenseVoiceSmall/resolve/master/model.pt -O /app/models/SenseVoiceSmall/model.pt
 
 # 3. Instalamos la versión ligera de PyTorch (solo CPU)
 RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cpu
 
-# 4. Copiamos e instalamos los requerimientos (ya editados para saltar PyTorch)
+# 4. Copiamos e instalamos los requerimientos
 COPY main/xiaozhi-server/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
