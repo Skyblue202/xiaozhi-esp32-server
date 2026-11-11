@@ -62,6 +62,8 @@ ASR:
     api_key: "__GROQ_API_KEY__"
     base_url: https://api.groq.com/openai/v1/audio/transcriptions
     model_name: whisper-large-v3-turbo
+    language: es
+    prompt: "Conversación en español de Colombia con un asistente de voz."
     output_dir: tmp/
 
 LLM:
