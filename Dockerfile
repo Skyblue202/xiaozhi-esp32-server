@@ -23,8 +23,8 @@ RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cpu && \
     pip install --no-cache-dir -r requirements.txt
 
-# 6. Quitar el sitio por defecto de Debian y poner el nuestro
-RUN rm -f /etc/nginx/sites-enabled/default && \
+# 6. Configuración de Nginx (sitio por defecto eliminado)
+RUN rm -f /etc/nginx/sites-enabled/default /etc/nginx/sites-available/default && \
     echo 'server { \
     listen 80 default_server; \
     location /xiaozhi/ota { \
@@ -41,8 +41,8 @@ RUN rm -f /etc/nginx/sites-enabled/default && \
     } \
 }' > /etc/nginx/conf.d/default.conf
 
-# 7. Iniciar Python y Nginx juntos
-RUN printf '#!/bin/bash\npython app.py &\nnginx -g "daemon off;"\n' > /start.sh && chmod +x /start.sh
+# 7. Arranque: borra el sitio por defecto otra vez, inicia Python y Nginx
+RUN printf '#!/bin/bash\nrm -f /etc/nginx/sites-enabled/default\npython app.py &\nnginx -t && nginx -g "daemon off;"\n' > /start.sh && chmod +x /start.sh
 
 EXPOSE 80
 
