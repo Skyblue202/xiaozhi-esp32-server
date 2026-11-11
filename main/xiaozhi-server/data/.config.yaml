@@ -4,6 +4,7 @@ server:
   http_port: 8003
   websocket: wss://xiaozhi-esp32-server-production-5f78fc40.up.railway.app/xiaozhi/v1/
   vision_explain: https://xiaozhi-esp32-server-production-5f78fc40.up.railway.app/mcp/vision/explain
+  timezone_offset: -5
 
 log:
   log_level: INFO
@@ -13,6 +14,18 @@ log:
 
 delete_audio: true
 close_connection_no_voice_time: 120
+
+exit_commands:
+  - "salir"
+  - "adiós"
+  - "apágate"
+
+system_error_response: "Lo siento, tengo un problema en este momento. Intentemos de nuevo en un rato."
+
+end_prompt:
+  enable: true
+  prompt: |
+    Despídete del usuario en español con una frase corta y amable.
 
 selected_module:
   VAD: SileroVAD
@@ -27,7 +40,6 @@ Intent:
     type: function_call
     functions:
       - change_role
-      - web_search
       - get_weather
       - get_news_from_newsnow
       - play_music
